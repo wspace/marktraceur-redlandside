@@ -135,8 +135,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.textedit.clear()
 			self.changed = False
 			self.langlabel.setText(self.language)
-			langlabelcaption = "Current Language: "
-			self.langlabel.setText(langlabelcaption + self.language)
+			self.langlabel.setText("Current Language: " + self.language)
 
 	def openafile(self):
 		# Clear the text editor, find the file, feed the text in the file into the text editor.
@@ -149,11 +148,8 @@ class MainWindow(QtGui.QMainWindow):
 		fileobject = open(self.filename, 'r')
 		self.textedit.setText(fileobject.read())
 		self.changed = False
-		# Determine FileType
-		extension = self.filename.split(".")[-1]
-		self.openfiletype(extension)
-		langlabelcaption = "Current Language: "
-		self.langlabel.setText(langlabelcaption + self.language)
+		self.filetype(self.filename.split(".")[-1])
+		self.langlabel.setText("Current Language: " + self.language)
 		fileobject.close()
 
 	def savethefile(self):
@@ -162,6 +158,7 @@ class MainWindow(QtGui.QMainWindow):
 		fileobject = open(filename, 'w')
 		fileobject.write(self.textedit.toPlainText())
 		fileobject.close()
+		self.filetype(self.filename.split(".")[-1])
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
@@ -189,7 +186,7 @@ class MainWindow(QtGui.QMainWindow):
 	def changed(self):
 		self.ischanged = True
 
-	def openfiletype(self, ext):
+	def filetype(self, ext):
 		if ext == "cpp":
 			self.language = "C++"
 			self.runcomm = str(self.filename[:-4])
