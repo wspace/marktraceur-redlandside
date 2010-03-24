@@ -221,6 +221,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		elif ext == "pro":
 			self.language = "Prolog"
+			self.runcomm = "prolog -s " + str(self.filename)
 
 		elif ext == "lisp":
 			self.language = "Lisp"
@@ -236,6 +237,8 @@ class MainWindow(QtGui.QMainWindow):
 			return "g++ " + self.filename + " -o " + self.filename[:-4]
 		elif self.language == "Python":
 			return "python " + self.filename
+		elif self.language == "Prolog":
+			return "python -s " + self.filename
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "This language does not yet have support in rIDE. Sorry!")
 			raise Exception("No support for this language...")
