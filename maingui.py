@@ -51,7 +51,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.textedit.setLineWrapMode(0)
 		self.textedit.setText('Welcome to rIDE\n\nPlease create a new file or open an existing one to be able to use rIDE.')
 		self.textedit.setEnabled(False)
-		self.connect(self.textedit, QtCore.SIGNAL('textChanged()'), self.changed)
 		
 		# Creates an exit button, sets its icon and adds functionality.
 		
@@ -163,7 +162,6 @@ class MainWindow(QtGui.QMainWindow):
 		if ok:
 			self.textedit.setEnabled(True)
 			self.textedit.clear()
-			self.changed = False
 			self.langlabel.setText(self.language)
 			self.langlabel.setText("Current Language: " + self.language)
 
@@ -177,7 +175,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.textedit.setFontFamily("monospace")
 		fileobject = open(self.filename, 'r')
 		self.textedit.setText(fileobject.read())
-		self.changed = False
 		self.filetype(self.filename.split(".")[-1])
 		self.langlabel.setText("Current Language: " + self.language)
 		fileobject.close()
@@ -212,9 +209,6 @@ class MainWindow(QtGui.QMainWindow):
 	def onlyrun(self):
 		# Find the binary created by the IDE. If it doesn't exist, throw an error. Then, run it.
 		os.system("xterm -e '" + self.runcomm + "'")
-
-	def changed(self):
-		self.ischanged = True
 
 	def filetype(self, ext):
 		if ext == "cpp":
