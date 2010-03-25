@@ -191,4 +191,4 @@ class MainWindow(QtGui.QMainWindow):
 		elif os.name == 'mac':
 			os.system("term -e '" + self.currentfile.runcomm + "; python pause.py'")
 		else:
-			os.system("cmd /c '" + self.currentfile.runcomm + "; python pause.py
+			os.system("cmd /c '" + self.currentfile.runcomm + "; python pause.py'")
