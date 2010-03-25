@@ -208,7 +208,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	def onlyrun(self):
 		# Find the binary created by the IDE. If it doesn't exist, throw an error. Then, run it.
-		os.system("xterm -e '" + self.runcomm + "'")
+		os.system("xterm -e '" + self.runcomm + "; python xtermpause.py'")
 
 	def filetype(self, ext):
 		if ext == "cpp":
@@ -225,6 +225,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		elif ext == "lisp":
 			self.language = "Lisp"
+			self.runcomm = "clisp " + str(self.filename)
 
 		elif ext == "ws":
 			self.language = "Whitespace"
@@ -239,6 +240,8 @@ class MainWindow(QtGui.QMainWindow):
 			return "python " + self.filename
 		elif self.language == "Prolog":
 			return "prolog -s " + self.filename
+		elif self.language == "Lisp":
+			return "clisp " + self.filename
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "This language does not yet have support in rIDE. Sorry!")
 			raise Exception("No support for this language...")
