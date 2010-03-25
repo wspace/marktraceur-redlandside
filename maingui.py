@@ -186,4 +186,9 @@ class MainWindow(QtGui.QMainWindow):
 
 	def onlyrun(self):
 		# Find the binary created by the IDE. If it doesn't exist, throw an error. Then, run it.
-		os.system("xterm -e '" + self.currentfile.runcomm + "; python xtermpause.py'")
+		if os.name == 'posix':
+			os.system("xterm -e '" + self.currentfile.runcomm + "; python pause.py'")
+		elif os.name == 'mac':
+			os.system("term -e '" + self.currentfile.runcomm + "; python pause.py'")
+		else:
+			os.system("cmd /c '" + self.currentfile.runcomm + "; python pause.py
