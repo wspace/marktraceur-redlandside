@@ -39,7 +39,7 @@ class MainWindow(QtGui.QMainWindow):
 		
 		# Set the window size when opened, title the window, and set the icon
 		
-		self.resize(800,600)
+		self.resize(800,601)
 		self.setWindowTitle('rIDE')
 		self.setWindowIcon(QtGui.QIcon('icons/ride.png'))
 		
@@ -181,15 +181,15 @@ class MainWindow(QtGui.QMainWindow):
 
 	def savethefile(self):
 		# Take all the text in the editor, put all the text into a file, and change the filename to that.
-		filename = QtGui.QFileDialog.getOpenFileName(self, 'Save file...', os.path.expanduser('~'))
-		fileobject = open(filename, 'w')
+		self.filename = QtGui.QFileDialog.getOpenFileName(self, 'Save file...', os.path.expanduser('~'))
+		fileobject = open(self.filename, 'w')
 		fileobject.write(self.textedit.toPlainText())
 		fileobject.close()
 		self.filetype(self.filename.split(".")[-1])
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
-		if self.language != "C++":
+		if self.language not in ["C++"]:
 			QtGui.QMessageBox.about(self, "Build results", "This language doesn't need to be built first! Just hit 'Run'!")
 			raise Exception("This is an interpreted language...")
 		statz, outz = commands.getstatusoutput(str(self.buildcomm()))
@@ -238,7 +238,7 @@ class MainWindow(QtGui.QMainWindow):
 		elif self.language == "Python":
 			return "python " + self.filename
 		elif self.language == "Prolog":
-			return "python -s " + self.filename
+			return "prolog -s " + self.filename
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "This language does not yet have support in rIDE. Sorry!")
 			raise Exception("No support for this language...")
