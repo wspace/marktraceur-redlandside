@@ -160,7 +160,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
-		if self.language not in ["C++"]:
+		if self.currentfile.language not in ["C++"]:
 			QtGui.QMessageBox.about(self, "Build results", "This language doesn't need to be built first! Just hit 'Run'!")
 			raise Exception("This is an interpreted language...")
 		statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
@@ -173,7 +173,7 @@ class MainWindow(QtGui.QMainWindow):
 		# Ask if they want to save the file, then do so--otherwise, throw an error--then save the file, build it with the appropriate command, and display the results.
 		# If the command used to build it exits with an error, we have a problem--make sure it doesn't close to allow review of the errors, but don't try to run the binary.
 		# If it makes it through, close the build window and run the program.
-		if self.language == "C++":
+		if self.currentfile.language == "C++":
 			self.onlybuild()
 		self.onlyrun()
 
