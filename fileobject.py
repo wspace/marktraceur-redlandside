@@ -57,7 +57,7 @@ class FileObject(object):
 		self.parent.langlabel.setText("Current Language: " + self.language)
 		fileobject.close()
 		self.parent.textedit.setEnabled(True)
-		parent.langlabel.setText("Current Language: " + self.language)
+		self.parent.langlabel.setText("Current Language: " + self.language)
 
 	def savefile(self, forcedia = False):
 		# Take all the text in the editor, put all the text into a file, and change the filename to that.
@@ -67,6 +67,9 @@ class FileObject(object):
 		fileout.write(self.parent.textedit.toPlainText())
 		fileout.close()
 		self.findtype(self.filename.split(".")[-1])
+
+	def saveas(self):
+		self.savefile(True)
 
 	def findtype(self, ext):
 		if ext == "cpp":
