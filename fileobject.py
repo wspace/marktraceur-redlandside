@@ -54,7 +54,6 @@ class FileObject(object):
 		fileobject = open(self.filename, 'r')
 		self.parent.textedit.setText(fileobject.read())
 		self.findtype(self.filename.split(".")[-1])
-		self.parent.langlabel.setText("Current Language: " + self.language)
 		fileobject.close()
 		self.parent.textedit.setEnabled(True)
 		self.parent.langlabel.setText("Current Language: " + self.language)
@@ -97,7 +96,7 @@ class FileObject(object):
 			self.runcomm = "python whitespace/interpret.py " + str(self.filename)
 			self.buildcomm = ""
 
-		elif ext == "LOL":
+		elif ext == "lol":
 			self.language = "LOLCODE"
 			self.runcomm = "python lol.py " + str(self.filename)
 			self.buildcomm = ""
