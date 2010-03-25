@@ -33,7 +33,7 @@ import os.path
 from PyQt4 import QtGui, QtCore
 from maingui import MainWindow
 
-app = QtGui.QApplication(sys.argv)
-main = MainWindow()
-main.show()
-sys.exit(app.exec_())
+ride = QtGui.QApplication(sys.argv)
+ridemain = MainWindow()
+ridemain.show()
+sys.exit(ride.exec_())
