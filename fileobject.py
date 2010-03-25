@@ -89,11 +89,12 @@ class FileObject(object):
 
 		elif ext == "lisp":
 			self.language = "Lisp"
-			self.buildcomm = "clisp " + str(self.filename)
+			self.runcomm = "clisp " + str(self.filename)
 
 		elif ext == "ws":
 			self.language = "Whitespace"
-			self.buildcomm = ""
+			self.runcomm = ""
 
 		elif ext == "LOL":
 			self.language = "LOLCODE"
+			self.runcomm = ""
