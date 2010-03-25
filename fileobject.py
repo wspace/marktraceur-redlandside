@@ -94,7 +94,7 @@ class FileObject(object):
 
 		elif ext == "ws":
 			self.language = "Whitespace"
-			self.runcomm = ""
+			self.runcomm = "python whitespace/interpreter.py " + str(self.filename)
 			self.buildcomm = ""
 
 		elif ext == "LOL":
