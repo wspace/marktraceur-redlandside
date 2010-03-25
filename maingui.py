@@ -83,14 +83,20 @@ class MainWindow(QtGui.QMainWindow):
 		savefile.setStatusTip('Create a new file')
 		self.connect(savefile, QtCore.SIGNAL('triggered()'), self.currentfile.savefile)
 		
-		# Creates a similar shortcut for saving a file
+		# Creates a similar shortcut for building a file
 		
 		buildonly = QtGui.QAction(QtGui.QIcon('icons/buildonly.png'), 'Build', self)
 		buildonly.setShortcut('Ctrl+T')
 		buildonly.setStatusTip('Build the project')
 		self.connect(buildonly, QtCore.SIGNAL('triggered()'), self.onlybuild)
+
+		# Creates a similar shortcut for saving a file, forcing a dialog.
 		
-		# Creates the save shortcut
+		buildonly = QtGui.QAction(QtGui.QIcon('icons/savefile.png'), 'Save as...', self)
+		buildonly.setStatusTip('Save the project as a different filename')
+		self.connect(buildonly, QtCore.SIGNAL('triggered()'), self.currentfile.saveas)
+		
+		# Creates the build-and-run shortcut
 		
 		buildrun = QtGui.QAction(QtGui.QIcon('icons/buildandrun.png'), 'Build and Run', self)
 		buildrun.setShortcut('Ctrl+B')
