@@ -32,6 +32,7 @@ import commands
 from PyQt4 import QtGui, QtCore
 import os.path
 import os
+from fileobject import FileObject
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -39,7 +40,9 @@ class MainWindow(QtGui.QMainWindow):
 		
 		# Set the window size when opened, title the window, and set the icon
 		
-		self.resize(800,601)
+		self.currentfile = FileObject(parent=self)
+
+		self.resize(800,600)
 		self.setWindowTitle('rIDE')
 		self.setWindowIcon(QtGui.QIcon('icons/ride.png'))
 		
@@ -64,21 +67,21 @@ class MainWindow(QtGui.QMainWindow):
 		newfile = QtGui.QAction(QtGui.QIcon('icons/newfile.png'), 'New', self)
 		newfile.setShortcut('Ctrl+N')
 		newfile.setStatusTip('Create a new file')
-		self.connect(newfile, QtCore.SIGNAL('triggered()'), self.createanewfile)
+		self.connect(newfile, QtCore.SIGNAL('triggered()'), self.currentfile.newfile)
 		
 		# Creates a similar shortcut for opening a file
 		
 		openfile = QtGui.QAction(QtGui.QIcon('icons/openfile.png'), 'Open...', self)
 		openfile.setShortcut('Ctrl+O')
 		openfile.setStatusTip('Open a file')
-		self.connect(openfile, QtCore.SIGNAL('triggered()'), self.openafile)
+		self.connect(openfile, QtCore.SIGNAL('triggered()'), self.currentfile.openfile)
 		
 		# Creates a similar shortcut for saving a file
 				
 		savefile = QtGui.QAction(QtGui.QIcon('icons/savefile.png'), 'Save...', self)
 		savefile.setShortcut('Ctrl+S')
 		savefile.setStatusTip('Create a new file')
-		self.connect(savefile, QtCore.SIGNAL('triggered()'), self.savethefile)
+		self.connect(savefile, QtCore.SIGNAL('triggered()'), self.currentfile.savefile)
 		
 		# Creates a similar shortcut for saving a file
 		
@@ -87,7 +90,7 @@ class MainWindow(QtGui.QMainWindow):
 		buildonly.setStatusTip('Build the project')
 		self.connect(buildonly, QtCore.SIGNAL('triggered()'), self.onlybuild)
 		
-		# Creates a similar shortcut for saving a file
+		# Creates the save shortcut
 		
 		buildrun = QtGui.QAction(QtGui.QIcon('icons/buildandrun.png'), 'Build and Run', self)
 		buildrun.setShortcut('Ctrl+B')
@@ -100,11 +103,15 @@ class MainWindow(QtGui.QMainWindow):
 		runonly.setShortcut('Ctrl+R')
 		runonly.setStatusTip('Run the latest build')
 		self.connect(runonly, QtCore.SIGNAL('triggered()'), self.onlyrun)
+
+		# Creates the copy shortcut
 		
 		copy = QtGui.QAction('Copy', self)
 		copy.setShortcut('Ctrl+C')
 		copy.setStatusTip('Copy the selected text')
 		self.connect(copy, QtCore.SIGNAL('triggered()'), self.textedit, QtCore.SLOT('copy()'))
+
+		# Create the cut shortcut
 		
 		cut = QtGui.QAction('Cut', self)
 		cut.setShortcut('Ctrl+X')
@@ -115,13 +122,14 @@ class MainWindow(QtGui.QMainWindow):
 		paste.setShortcut('Ctrl+V')
 		paste.setStatusTip('Paste text from the clipboard')
 		self.connect(paste, QtCore.SIGNAL('triggered()'), self.textedit, QtCore.SLOT('paste()'))
-		# Initialize StatusBar
+
+		# Initialize Status bar
 		
 		statusbar = self.statusBar()
 		self.langlabel = QtGui.QLabel()
 		statusbar.addWidget(self.langlabel)
 		
-		# Creates the munu bar and the file menu, adding in the appropriate actions
+		# Creates the menu bar and the file menu, adding in the appropriate actions
 		
 		menubar = self.menuBar()
 		file = menubar.addMenu('&File')
@@ -130,7 +138,7 @@ class MainWindow(QtGui.QMainWindow):
 		file.addAction(savefile)
 		file.addAction(exit)
 		
-		# Creates the run/build menu, adding in the appropriate contents
+		# Creates the edit menu, adding in the appropriate contents
 		
 		edit = menubar.addMenu('&Edit')
 		edit.addAction(copy)
@@ -149,50 +157,13 @@ class MainWindow(QtGui.QMainWindow):
 		self.toolbar.addAction(buildrun)
 		self.toolbar.addAction(runonly)
 		self.toolbar.addAction(exit)
-		#toolbar.addWidget(self.langlabel)
-		
-		self.filename = ""
-		self.language = ""
-		self.runcomm = ""
-
-	def createanewfile(self):
-		# Clear the text editor, open a dialog to get the program's language.
-		languages = ["C++", "Python","Prolog", "Lisp", "Whitespace", "LOLCODE"]
-		self.language, ok = QtGui.QInputDialog.getItem(self, 'Choose a Language', 'Which language are you using today?', languages, 0, False)
-		if ok:
-			self.textedit.setEnabled(True)
-			self.textedit.clear()
-			self.langlabel.setText(self.language)
-			self.langlabel.setText("Current Language: " + self.language)
-
-	def openafile(self):
-		# Clear the text editor, find the file, feed the text in the file into the text editor.
-		self.filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file...', os.path.expanduser('~'))
-		if self.filename == "":
-			return 0
-		self.textedit.setEnabled(True)
-		self.textedit.clear()
-		self.textedit.setFontFamily("monospace")
-		fileobject = open(self.filename, 'r')
-		self.textedit.setText(fileobject.read())
-		self.filetype(self.filename.split(".")[-1])
-		self.langlabel.setText("Current Language: " + self.language)
-		fileobject.close()
-
-	def savethefile(self):
-		# Take all the text in the editor, put all the text into a file, and change the filename to that.
-		self.filename = QtGui.QFileDialog.getOpenFileName(self, 'Save file...', os.path.expanduser('~'))
-		fileobject = open(self.filename, 'w')
-		fileobject.write(self.textedit.toPlainText())
-		fileobject.close()
-		self.filetype(self.filename.split(".")[-1])
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
 		if self.language not in ["C++"]:
 			QtGui.QMessageBox.about(self, "Build results", "This language doesn't need to be built first! Just hit 'Run'!")
 			raise Exception("This is an interpreted language...")
-		statz, outz = commands.getstatusoutput(str(self.buildcomm()))
+		statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
 		if statz != 0:
 			QtGui.QMessageBox.about(self, "Build results", outz)
 		else:
@@ -208,40 +179,4 @@ class MainWindow(QtGui.QMainWindow):
 
 	def onlyrun(self):
 		# Find the binary created by the IDE. If it doesn't exist, throw an error. Then, run it.
-		os.system("xterm -e '" + self.runcomm + "; python xtermpause.py'")
-
-	def filetype(self, ext):
-		if ext == "cpp":
-			self.language = "C++"
-			self.runcomm = str(self.filename[:-4])
-
-		elif ext == "py":
-			self.language = "Python"
-			self.runcomm = "python " + str(self.filename)
-
-		elif ext == "pro":
-			self.language = "Prolog"
-			self.runcomm = "prolog -s " + str(self.filename)
-
-		elif ext == "lisp":
-			self.language = "Lisp"
-			self.runcomm = "clisp " + str(self.filename)
-
-		elif ext == "ws":
-			self.language = "Whitespace"
-
-		elif ext == "LOL":
-			self.language = "LOLCODE"
-
-	def buildcomm(self):
-		if self.language == "C++":
-			return "g++ " + self.filename + " -o " + self.filename[:-4]
-		elif self.language == "Python":
-			return "python " + self.filename
-		elif self.language == "Prolog":
-			return "prolog -s " + self.filename
-		elif self.language == "Lisp":
-			return "clisp " + self.filename
-		else:
-			QtGui.QMessageBox.about(self, "Build results", "This language does not yet have support in rIDE. Sorry!")
-			raise Exception("No support for this language...")
+		os.system("xterm -e '" + self.currentfile.runcomm + "; python pause.py'")
