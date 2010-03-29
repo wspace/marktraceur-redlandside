@@ -77,14 +77,14 @@ class FileObject(object):
 			self.runcomm = str(self.filename[:-4])
 			self.buildcomm = "g++ " + str(self.filename) + " -o " + str(self.filename[:-4])
 			if os.name == 'nt':
-				self.buildcomm = "c:/MinGW/bin/" + self.buildcomm
+				self.buildcomm = "c:\\MinGW\\bin\\g++.exe " + str(self.filename) + " /o " + str(self.filename[:-4])
 
 		elif ext == "py":
 			self.language = "Python"
 			self.runcomm = "python " + self.filename
 			self.buildcomm = ""
 			if os.name == 'nt':
-				self.runcomm = "c:/Python26/python.exe " + self.filename
+				self.runcomm = "c:\\Python26\\python.exe " + self.filename
 
 		elif ext == "pro":
 			self.language = "Prolog"
