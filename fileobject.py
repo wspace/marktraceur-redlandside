@@ -27,6 +27,7 @@ or implied, of Mark Holmquist and Logan May.
 """
 
 import os.path
+import os
 from PyQt4 import QtGui, QtCore
 
 class FileObject(object):
@@ -61,7 +62,7 @@ class FileObject(object):
 	def savefile(self, forcedia = False):
 		# Take all the text in the editor, put all the text into a file, and change the filename to that.
 		if self.filename == "" or forcedia:
-			self.filename = QtGui.QFileDialog.getOpenFileName(self.parent, 'Save file...', os.path.expanduser('~'))
+			self.filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Save file...', os.path.expanduser('~'))
 		fileout = open(self.filename, 'w')
 		fileout.write(self.parent.textedit.toPlainText())
 		fileout.close()
@@ -74,12 +75,16 @@ class FileObject(object):
 		if ext == "cpp":
 			self.language = "C++"
 			self.runcomm = str(self.filename[:-4])
-			self.buildcomm = "g++ " + self.filename + " -o " + self.filename[:-4]
+			self.buildcomm = "g++ " + str(self.filename) + " -o " + str(self.filename[:-4])
+			if os.name == 'nt':
+				self.buildcomm = "c:/MinGW/bin/" + self.buildcomm
 
 		elif ext == "py":
 			self.language = "Python"
-			self.runcomm = "python " + str(self.filename)
+			self.runcomm = "python " + self.filename
 			self.buildcomm = ""
+			if os.name == 'nt':
+				self.runcomm = "c:/Python26/python.exe " + self.filename
 
 		elif ext == "pro":
 			self.language = "Prolog"
