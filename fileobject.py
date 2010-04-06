@@ -47,6 +47,7 @@ class FileObject(object):
 			self.parent.textedit.clear()
 			self.parent.textedit.setEnabled(True)
 			self.parent.langlabel.setText("Current Language: " + self.language)
+			self.runcomm = ""
 
 	def openfile(self):
 		self.filename = QtGui.QFileDialog.getOpenFileName(self.parent, 'Open file...', os.path.expanduser('~'))
