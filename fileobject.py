@@ -100,5 +100,5 @@ class FileObject(object):
 
 		elif ext == "LOL":
 			self.language = "LOLCODE"
-			self.runcomm = "python lol.py " + str(self.filename)
+			self.runcomm = "python lol.py -r " + str(self.filename)
 			self.buildcomm = ""
