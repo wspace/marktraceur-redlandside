@@ -11,8 +11,6 @@ __version__ = "0.2"
 
 import re
 import sys
-import os.path
-import os
 
 class State(object):
 	def __init__(self): self.level = 0
@@ -149,10 +147,11 @@ if __name__ == "__main__":
 			print "### DO NOT WANT!!! : [%s]" % (buf,)
 			buf = ""
 	l2p = Lol2Py()
-	fout = open("templol.py", "w")
 	codez = l2p.get_code_str(kws)
-	fout.write(codez)
-	fout.close
-	os.system("xterm -e 'python templol.py; python pause.py'")
-	
+	if showcode:
+		if runcode: print "# Start lolpy code output"
+		print codez
+		if runcode: print "# End lolpy code output\n\n# RUNZ0RZ!"
+	if runcode: exec codez in {}
+
 
