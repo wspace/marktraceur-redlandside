@@ -50,7 +50,6 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 		self.styles = {
 			'keyword': format('red'),
 			'preproc': format('green'),
-			'operator': format('blue'),
 			'brace': format('darkBlue'),
 			'defclass': format('black', 'bold'),
 			'literal': format('magenta'),
@@ -60,14 +59,12 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 		rules = []
 
 		if fileobj.language == "C++":
-			keywords = ['and','and_eq','asm','auto','bitand','bitor','bool','break','case','catch','char','class','compl','const','const_cast','continue','default','delete','do','double','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','not','not_eq','operator','or','or_eq','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_cast','struct','switch','template','this','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while','xor','xor_eq']
+			keywords = ['and', 'del', 'for', 'is', 'raise', 'assert', 'elif', 'from', 'lambda', 'return', 'break', 'else', 'global', 'not', 'try', 'class', 'except', 'if', 'or', 'while', 'continue', 'exec', 'import', 'pass', 'yield', 'def', 'finally', 'in', 'print']
 			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
 
 			preprocs = ['#define','#error','#include','#line','#pragma','#undef','#if','#ifdef','#ifndef','#else','#elif','#endif']
 			rules += [(r'%s' % w, 0, self.styles['preproc']) for w in preprocs]
 
-			operators = ['=','==','!=','<=','>=','<','>','\&\&','\|\|','!','\+','\+\+','-','--','\*','/','\%','\+=','-=','\*=','/=','\%=','<<','>>','<<=','>>=','\~','\&','\&=','\|','\|=','\^','\^=']
-			rules += [(r'%s' % w, 0, self.styles['operator']) for w in operators]
 
 			braces = ['\{','\}','\(','\)','\[','\]']
 			rules += [(r'%s' % w, 0, self.styles['brace']) for w in braces]
@@ -78,7 +75,27 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 					(r'[0-9\b][0-9]*', 0, self.styles['literal']), # Numbers
 					(r'\/\/[^\n]*', 0, self.styles['comment'])
 			]
+		elif fileobj.language == "Python":
+			keywords = ['and','and_eq','asm','auto','bitand','bitor','bool','break','case','catch','char','class','compl','const','const_cast','continue','default','delete','do','double','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','not','not_eq','operator','or','or_eq','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_cast','struct','switch','template','this','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while','xor','xor_eq']
+			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
 
+			preprocs = ['import', 'from' ]
+			
+			rules += [(r'%s' % w, 0, self.styles['preproc']) for w in preprocs]
+			
+			rules += [(r'def\:', 0, self.styles['defclass'])]
+
+
+			braces = ['\{','\}','\(','\)','\[','\]']
+			rules += [(r'%s' % w, 0, self.styles['brace']) for w in braces]
+
+			rules += [
+					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
+					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
+					(r'[0-9\b][0-9]*', 0, self.styles['literal']), # Numbers
+					(r'\/\/[^\n]*', 0, self.styles['comment'])
+			]
+		
 		self.rules = [(QtCore.QRegExp(pattern), index, formatz) for (pattern, index, formatz) in rules]
 
 	def highlightBlock(self, text):
