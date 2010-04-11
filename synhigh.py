@@ -72,7 +72,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			rules += [
 					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
 					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
-					(r'0x[0-9a-fA-F]+|[+-]?\d+(.\d+)?([eE][+-]\d+)?|\d+', 0, self.styles['literal']), # Numbers
+					(r'\d', 0, self.styles['literal']), # Numbers
 					(r'\/\/[^\n]*', 0, self.styles['comment'])
 			]
 		elif fileobj.language == "Python":
@@ -92,7 +92,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			rules += [
 					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
 					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
-					(r'0x[0-9a-fA-F]+|[+-]?\d+(.\d+)?([eE][+-]\d+)?|\d+', 0, self.styles['literal']), #Numbers
+					(r'\d', 0, self.styles['literal']), #Numbers
 					(r'\#[^\n]*', 0, self.styles['comment'])
 			]
 		
