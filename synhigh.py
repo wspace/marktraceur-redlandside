@@ -59,7 +59,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 		rules = []
 
 		if fileobj.language == "C++":
-			keywords = ['and', 'del', 'for', 'is', 'raise', 'assert', 'elif', 'from', 'lambda', 'return', 'break', 'else', 'global', 'not', 'try', 'class', 'except', 'if', 'or', 'while', 'continue', 'exec', 'import', 'pass', 'yield', 'def', 'finally', 'in', 'print']
+			keywords = ['and','and_eq','asm','auto','bitand','bitor','bool','break','case','catch','char','class','compl','const','const_cast','continue','default','delete','do','double','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','not','not_eq','operator','or','or_eq','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_cast','struct','switch','template','this','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while','xor','xor_eq']
 			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
 
 			preprocs = ['#define','#error','#include','#line','#pragma','#undef','#if','#ifdef','#ifndef','#else','#elif','#endif']
@@ -76,7 +76,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 					(r'\/\/[^\n]*', 0, self.styles['comment'])
 			]
 		elif fileobj.language == "Python":
-			keywords = ['and','and_eq','asm','auto','bitand','bitor','bool','break','case','catch','char','class','compl','const','const_cast','continue','default','delete','do','double','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','not','not_eq','operator','or','or_eq','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_cast','struct','switch','template','this','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while','xor','xor_eq']
+			keywords = ['and', 'del', 'for', 'is', 'raise', 'assert', 'elif', 'from', 'lambda', 'return', 'break', 'else', 'global', 'not', 'try', 'class', 'except', 'if', 'or', 'while', 'continue', 'exec', 'import', 'pass', 'yield', 'def', 'finally', 'in', 'print']
 			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
 
 			preprocs = ['import', 'from' ]
