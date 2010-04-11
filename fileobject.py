@@ -98,7 +98,7 @@ class FileObject(object):
 			self.runcomm = "python whitespace/interpret.py " + str(self.filename)
 			self.buildcomm = ""
 
-		elif ext == "lol":
+		elif ext == "LOL":
 			self.language = "LOLCODE"
 			self.runcomm = "python lol.py " + str(self.filename)
 			self.buildcomm = ""
