@@ -93,7 +93,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
 					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
 					(r'[0-9\b][0-9]*', 0, self.styles['literal']), # Numbers
-					(r'\/\/[^\n]*', 0, self.styles['comment'])
+					(r'\#[^\n]*', 0, self.styles['comment'])
 			]
 		
 		self.rules = [(QtCore.QRegExp(pattern), index, formatz) for (pattern, index, formatz) in rules]
