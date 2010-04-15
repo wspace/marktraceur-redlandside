@@ -58,6 +58,8 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 		self.rules = []
 		rules = []
 
+# C++ ______________________________________________________________________________________________________________________
+
 		if fileobj.language == "C++":
 			keywords = ['and','and_eq','asm','auto','bitand','bitor','bool','break','case','catch','char','class','compl','const','const_cast','continue','default','delete','do','double','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','not','not_eq','operator','or','or_eq','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_cast','struct','switch','template','this','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while','xor','xor_eq']
 			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
@@ -72,14 +74,45 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			rules += [
 					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
 					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
-					(r'\d', 0, self.styles['literal']), # Numbers
+					(r'\b\d+\b', 0, self.styles['literal']), # Numbers
 					(r'\/\/[^\n]*', 0, self.styles['comment'])
 			]
+
+# PYTHON ______________________________________________________________________________________________________________________
+
+
+
 		elif fileobj.language == "Python":
 			keywords = ['and', 'del', 'for', 'is', 'raise', 'assert', 'elif', 'from', 'lambda', 'return', 'break', 'else', 'global', 'not', 'try', 'class', 'except', 'if', 'or', 'while', 'continue', 'exec', 'import', 'pass', 'yield', 'def', 'finally', 'in', 'print']
 			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
 
 			preprocs = ['import', 'from' ]
+			
+			rules += [(r'%s' % w, 0, self.styles['preproc']) for w in preprocs]
+			
+			rules += [(r'def\:', 0, self.styles['defclass'])]
+	
+
+			braces = ['\{','\}','\(','\)','\[','\]']
+			rules += [(r'%s' % w, 0, self.styles['brace']) for w in braces]
+
+			rules += [
+					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
+					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
+					(r'\b\d+\b', 0, self.styles['literal']), #Numbers
+					(r'\#[^\n]*', 0, self.styles['comment'])
+			]
+
+
+# LOLCODE ______________________________________________________________________________________________________________________
+
+
+
+		elif fileobj.language == "LOLCODE":
+			keywords = ['HAI', 'KTHXBYE', 'VISIBLE', 'GIMMEH', 'I HAS A', 'IM IN YR LOOP', 'IM OUTTA YR LOOP', 'IZ', 'BIGGER THAN', 'UP' ]
+			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
+
+			preprocs = ['CAN HAS']
 			
 			rules += [(r'%s' % w, 0, self.styles['preproc']) for w in preprocs]
 			
@@ -92,9 +125,38 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			rules += [
 					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
 					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
-					(r'\d', 0, self.styles['literal']), #Numbers
-					(r'\#[^\n]*', 0, self.styles['comment'])
+					(r'\b\d+\b', 0, self.styles['literal']), #Numbers
+					(r'BTW[^\n]*', 0, self.styles['comment'])
 			]
+
+# PROLOG ______________________________________________________________________________________________________________________
+
+
+
+
+		elif fileobj.language == "Prolog":
+			keywords = ['block', 'dynamic', 'mode', 'module', 'multifile', 'meta_predicate', 'parallel', 'sequenctial', 'volatile' ]
+			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
+
+			# in the case of prolog i've used the preproc style to highlight capitals for variables.
+			preprocs = [(r'\b[A-Z]+[a-zA-Z]*\b')]
+			
+			rules += [(r'%s' % w, 0, self.styles['preproc']) for w in preprocs]
+			
+			rules += [(r'def\:', 0, self.styles['defclass'])]
+
+
+			braces = ['\{','\}','\(','\)','\[','\]']
+			rules += [(r'%s' % w, 0, self.styles['brace']) for w in braces]
+
+			rules += [
+					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
+					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
+					(r'\b\d+\b', 0, self.styles['literal']), #Numbers
+					(r'\%[^\n]*', 0, self.styles['comment'])
+			]
+
+
 		
 		self.rules = [(QtCore.QRegExp(pattern), index, formatz) for (pattern, index, formatz) in rules]
 

@@ -111,3 +111,4 @@ class FileObject (object):
 			self.language = "LOLCODE"
 			self.runcomm = "python lol.py -r " + str(self.filename)
 			self.buildcomm = ""
+	
