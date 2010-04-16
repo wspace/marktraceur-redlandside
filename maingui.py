@@ -32,6 +32,7 @@ import commands
 from PyQt4 import QtGui, QtCore
 import os.path
 import os
+import time
 from fileobject import FileObject
 from synhigh import SyntaxHighlighter
 
@@ -178,6 +179,9 @@ class MainWindow (QtGui.QMainWindow):
 			raise Exception("This is an interpreted language...")
 		statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
 		if statz != 0:
+			now = time.time()
+			while time.time() < now + 1:
+				pass
 			os.system("xterm -e '" + self.currentfile.buildcomm + "; python pause.py'")
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "The build succeeded!")
