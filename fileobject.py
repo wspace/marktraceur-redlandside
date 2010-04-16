@@ -39,7 +39,6 @@ class FileObject (object):
 		self.language = ""
 		self.runcomm = ""
 		self.buildcomm = ""
-		self.saved = False
 
 	def newfile(self):
 		languages = ["C++", "Python","Prolog", "Lisp", "Whitespace", "LOLCODE"]
@@ -63,7 +62,6 @@ class FileObject (object):
 		self.parent.textedit.setEnabled(True)
 		self.parent.langlabel.setText("Current Language: " + self.language)
 		self.parent.highlighter = SyntaxHighlighter(self)
-		self.saved = True
 		self.parent.textedit.selectAll()
 		self.parent.textedit.cut()
 		self.parent.textedit.paste()
@@ -71,14 +69,15 @@ class FileObject (object):
 	def savefile(self, forcedia = False):
 		# Take all the text in the editor, put all the text into a file, and change the filename to that.
 		if self.filename == "" or forcedia:
-			self.filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Save file...', os.path.expanduser('~'))
+			savedia = QtGui.QFileDialog()
+			self.filename = savedia.getSaveFileName(self.parent, 'Save file...', os.path.expanduser('~'))
+			savedia.close()
 		if self.filename == "":
 			return
 		fileout = open(self.filename, 'w')
 		fileout.write(self.parent.textedit.toPlainText())
 		fileout.close()
 		self.findtype(self.filename.split(".")[-1])
-		self.saved = True
 
 	def saveas(self):
 		self.savefile(True)

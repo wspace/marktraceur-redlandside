@@ -170,8 +170,14 @@ class MainWindow (QtGui.QMainWindow):
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
-		test = open(self.currentfile.filename)
-		if test.read() != self.textedit.toPlainText():
+		saved = True
+		if os.path.isfile(self.currentfile.filename):
+			test = open(self.currentfile.filename)
+			if test.read() != self.textedit.toPlainText():
+				saved = False
+		else:
+			saved = False
+		if not saved:
 			needsave = QtGui.QMessageBox.question(self, "WARNING: Save the file!", "You should save the file before continuing!", "OK", "Cancel")
 			if needsave == 0:
 				self.currentfile.savefile(True)
@@ -181,9 +187,6 @@ class MainWindow (QtGui.QMainWindow):
 			raise Exception("This is an interpreted language...")
 		statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
 		if statz != 0:
-			now = time.time()
-			while time.time() < now + 1:
-				pass
 			os.system("xterm -e '" + self.currentfile.buildcomm + "; python pause.py'")
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "The build succeeded!")
@@ -198,6 +201,18 @@ class MainWindow (QtGui.QMainWindow):
 
 	def onlyrun(self):
 		# Find the binary created by the IDE. If it doesn't exist, throw an error. Then, run it.
+		if self.currentfile.language not in ['C++']:
+			saved = True
+			if os.path.isfile(self.currentfile.filename):
+				test = open(self.currentfile.filename)
+				if test.read() != self.textedit.toPlainText():
+					saved = False
+			else:
+				saved = False
+			if not saved:
+				needsave = QtGui.QMessageBox.question(self, "WARNING: Save the file!", "You should save the file before continuing!", "OK", "Cancel")
+				if needsave == 0:
+					self.currentfile.savefile(True)
 		os.system("xterm -e '" + self.currentfile.runcomm + "; python pause.py'")
 
 	def whenchanged(self):
