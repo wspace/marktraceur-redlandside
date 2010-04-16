@@ -170,9 +170,11 @@ class MainWindow (QtGui.QMainWindow):
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
-		if not self.currentfile.saved:
-			QtGui.QMessageBox.about(self, "WARNING: Save the file!", "You should save the file before continuing!")
-			self.currentfile.savefile(True)
+		test = open(self.currentfile.filename)
+		if test.read() != self.textedit.toPlainText():
+			needsave = QtGui.QMessageBox.question(self, "WARNING: Save the file!", "You should save the file before continuing!", "OK", "Cancel")
+			if needsave == 0:
+				self.currentfile.savefile(True)
 
 		if self.currentfile.language not in ["C++"]:
 			QtGui.QMessageBox.about(self, "Build results", "This language doesn't need to be built first! Just hit 'Run'!")
