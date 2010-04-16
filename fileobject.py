@@ -64,7 +64,6 @@ class FileObject (object):
 		self.parent.langlabel.setText("Current Language: " + self.language)
 		self.parent.highlighter = SyntaxHighlighter(self)
 		self.saved = True
-		self.parent.highlighter.openhighlight()
 
 	def savefile(self, forcedia = False):
 		# Take all the text in the editor, put all the text into a file, and change the filename to that.

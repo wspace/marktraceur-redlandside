@@ -28,7 +28,7 @@ or implied, of Mark Holmquist and Logan May.
 
 from PyQt4 import QtGui, QtCore
 
-def format(color, style=''):
+def format(color, style='', bgcolor=''):
 	"""Return a QTextCharFormat with the given attributes.
 	"""
 	_color = QtGui.QColor()
@@ -39,6 +39,9 @@ def format(color, style=''):
 		_format.setFontWeight(QtGui.QFont.Bold)
 	if 'italic' in style:
 		_format.setFontItalic(True)
+	if bgcolor != '':
+		_color.setNamedColor(bgcolor)
+		_format.setBackground(_color)
 
 	return _format
 
@@ -53,7 +56,10 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			'brace': format('darkBlue'),
 			'defclass': format('black', 'bold'),
 			'literal': format('magenta'),
-			'comment': format('darkGreen', 'italic')
+			'comment': format('darkGreen', 'italic'),
+			'wsspace': format('black', bgcolor='blue'),
+			'wstab': format('black', bgcolor='red'),
+			'wsnewline': format('black', bgcolor='green')
 		}
 		self.rules = []
 		rules = []
@@ -135,7 +141,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 
 
 		elif fileobj.language == "Prolog":
-			keywords = ['block', 'dynamic', 'mode', 'module', 'multifile', 'meta_predicate', 'parallel', 'sequenctial', 'volatile' ]
+			keywords = ['block', 'dynamic', 'mode', 'module', 'multifile', 'meta_predicate', 'parallel', 'sequential', 'volatile' ]
 			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
 
 			# in the case of prolog i've used the preproc style to highlight capitals for variables.
@@ -157,7 +163,37 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			]
 
 
-		
+# LISP _______________________________________________________________________________________________________________________
+
+
+
+		elif fileobj.language == "Lisp":
+			keywords = ['car','cdr','setq','quote','eval','append','list','cons','atom','listp','null','memberp','nil','t','defun','abs','expt','sqrt','max','min','cond']
+			rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in keywords]
+
+			braces = ['\(','\)']
+			rules += [(r'%s' % w, 0, self.styles['brace']) for w in braces]
+
+			rules += [
+					(r'"[^"\\]*(\\.[^"\\]*)*"', 0, self.styles['literal']), # Double-quote strings
+					(r"'[^'\\]*(\\.[^'\\]*)*'", 0, self.styles['literal']), # Single-quote strings
+					(r'\b\d+\b', 0, self.styles['literal']), #Numbers
+					(r'\;[^\n]*', 0, self.styles['comment'])
+			]
+
+
+# WHITESPACE ____________________________________________________________________________________________________________________
+
+
+
+		elif fileobj.language == "Whitespace":
+			# OK, we're gonna do some crazy stuff with this one. Most of it needs to be defined by hand.
+			rules += [
+					(r' ', 0, self.styles['wsspace']),
+					(r'\t', 0, self.styles['wstab']),
+					(r'\n', 0, self.styles['wsnewline'])
+			]
+
 		self.rules = [(QtCore.QRegExp(pattern), index, formatz) for (pattern, index, formatz) in rules]
 
 	def highlightBlock(self, text):
@@ -172,6 +208,3 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 				self.setFormat(index, length, format)
 				index = expression.indexIn(text, index + length)
 		self.setCurrentBlockState(0)
-
-	def openhighlight(self):
-		self.rehighlight()
