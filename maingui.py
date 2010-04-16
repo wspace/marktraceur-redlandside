@@ -32,9 +32,11 @@ import commands
 from PyQt4 import QtGui, QtCore
 import os.path
 import os
+import time
 from fileobject import FileObject
+from synhigh import SyntaxHighlighter
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow (QtGui.QMainWindow):
 	def __init__(self):
 		QtGui.QMainWindow.__init__(self)
 		
@@ -54,6 +56,9 @@ class MainWindow(QtGui.QMainWindow):
 		self.textedit.setLineWrapMode(0)
 		self.textedit.setText('Welcome to rIDE\n\nPlease create a new file or open an existing one to be able to use rIDE.')
 		self.textedit.setEnabled(False)
+		self.connect(self.textedit, QtCore.SIGNAL('textChanged()'), self.whenchanged)
+
+		self.highlighter = SyntaxHighlighter(self.currentfile)
 		
 		# Creates an exit button, sets its icon and adds functionality.
 		
@@ -91,21 +96,21 @@ class MainWindow(QtGui.QMainWindow):
 		
 		# Creates a similar shortcut for building a file
 		
-		buildonly = QtGui.QAction(QtGui.QIcon('icons/buildonly.png'), 'Build', self)
+		buildonly = QtGui.QAction(QtGui.QIcon('icons/buildonly.png'), 'Build (Ctrl-T)', self)
 		buildonly.setShortcut('Ctrl+T')
 		buildonly.setStatusTip('Build the project')
 		self.connect(buildonly, QtCore.SIGNAL('triggered()'), self.onlybuild)
 		
 		# Creates the build-and-run shortcut
 		
-		buildrun = QtGui.QAction(QtGui.QIcon('icons/buildandrun.png'), 'Build and Run', self)
+		buildrun = QtGui.QAction(QtGui.QIcon('icons/buildandrun.png'), 'Build and Run (Ctrl-B)', self)
 		buildrun.setShortcut('Ctrl+B')
 		buildrun.setStatusTip('Build the project and run it')
 		self.connect(buildrun, QtCore.SIGNAL('triggered()'), self.buildandrun)
 		
 		# Creates the run shortcut
 		
-		runonly = QtGui.QAction(QtGui.QIcon('icons/runonly.png'), 'Run', self)
+		runonly = QtGui.QAction(QtGui.QIcon('icons/runonly.png'), 'Run (Ctrl-R)', self)
 		runonly.setShortcut('Ctrl+R')
 		runonly.setStatusTip('Run the latest build')
 		self.connect(runonly, QtCore.SIGNAL('triggered()'), self.onlyrun)
@@ -152,9 +157,7 @@ class MainWindow(QtGui.QMainWindow):
 		edit.addAction(cut)
 		edit.addAction(paste)
 		
-		
 		# Make a toolbar with all the trimmings
-		
 		
 		self.toolbar = self.addToolBar('Buttons')
 		self.toolbar.addAction(newfile)
@@ -167,12 +170,24 @@ class MainWindow(QtGui.QMainWindow):
 
 	def onlybuild(self):
 		# Ask if they want to save the file, then do so--otherwise, throw an error and tell them they want "onlyrun"--then save the file, build it with the appropriate command, and display the results.
+		saved = True
+		if os.path.isfile(self.currentfile.filename):
+			test = open(self.currentfile.filename)
+			if test.read() != self.textedit.toPlainText():
+				saved = False
+		else:
+			saved = False
+		if not saved:
+			needsave = QtGui.QMessageBox.question(self, "WARNING: Save the file!", "You should save the file before continuing!", "OK", "Cancel")
+			if needsave == 0:
+				self.currentfile.savefile(True)
+
 		if self.currentfile.language not in ["C++"]:
 			QtGui.QMessageBox.about(self, "Build results", "This language doesn't need to be built first! Just hit 'Run'!")
 			raise Exception("This is an interpreted language...")
 		statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
 		if statz != 0:
-			QtGui.QMessageBox.about(self, "Build results", outz)
+			os.system("xterm -e '" + self.currentfile.buildcomm + "; python pause.py'")
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "The build succeeded!")
 
@@ -186,4 +201,20 @@ class MainWindow(QtGui.QMainWindow):
 
 	def onlyrun(self):
 		# Find the binary created by the IDE. If it doesn't exist, throw an error. Then, run it.
+		if self.currentfile.language not in ['C++']:
+			saved = True
+			if os.path.isfile(self.currentfile.filename):
+				test = open(self.currentfile.filename)
+				if test.read() != self.textedit.toPlainText():
+					saved = False
+			else:
+				saved = False
+			if not saved:
+				needsave = QtGui.QMessageBox.question(self, "WARNING: Save the file!", "You should save the file before continuing!", "OK", "Cancel")
+				if needsave == 0:
+					self.currentfile.savefile(True)
 		os.system("xterm -e '" + self.currentfile.runcomm + "; python pause.py'")
+
+	def whenchanged(self):
+		self.textedit.setFontFamily("monospace")
+		self.currentfile.saved = False

@@ -29,15 +29,16 @@ or implied, of Mark Holmquist and Logan May.
 import os.path
 import os
 from PyQt4 import QtGui, QtCore
+from synhigh import SyntaxHighlighter
 
-class FileObject(object):
+class FileObject (object):
 
 	def __init__(self, parent=None):
 		self.parent = parent
 		self.filename = ""
 		self.language = ""
 		self.runcomm = ""
-		self.buildcomm = ""		
+		self.buildcomm = ""
 
 	def newfile(self):
 		languages = ["C++", "Python","Prolog", "Lisp", "Whitespace", "LOLCODE"]
@@ -47,22 +48,32 @@ class FileObject(object):
 			self.parent.textedit.clear()
 			self.parent.textedit.setEnabled(True)
 			self.parent.langlabel.setText("Current Language: " + self.language)
+			self.runcomm = ""
+			self.parent.highlighter = SyntaxHighlighter(self)
 
 	def openfile(self):
 		self.filename = QtGui.QFileDialog.getOpenFileName(self.parent, 'Open file...', os.path.expanduser('~'))
 		if self.filename == "":
-			return (False, "")
+			return
 		fileobject = open(self.filename, 'r')
 		self.parent.textedit.setText(fileobject.read())
 		self.findtype(self.filename.split(".")[-1])
 		fileobject.close()
 		self.parent.textedit.setEnabled(True)
 		self.parent.langlabel.setText("Current Language: " + self.language)
+		self.parent.highlighter = SyntaxHighlighter(self)
+		self.parent.textedit.selectAll()
+		self.parent.textedit.cut()
+		self.parent.textedit.paste()
 
 	def savefile(self, forcedia = False):
 		# Take all the text in the editor, put all the text into a file, and change the filename to that.
 		if self.filename == "" or forcedia:
-			self.filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Save file...', os.path.expanduser('~'))
+			savedia = QtGui.QFileDialog()
+			self.filename = savedia.getSaveFileName(self.parent, 'Save file...', os.path.expanduser('~'))
+			savedia.close()
+		if self.filename == "":
+			return
 		fileout = open(self.filename, 'w')
 		fileout.write(self.parent.textedit.toPlainText())
 		fileout.close()
@@ -79,7 +90,7 @@ class FileObject(object):
 
 		elif ext == "py":
 			self.language = "Python"
-			self.runcomm = "python " + self.filename
+			self.runcomm = "python " + str(self.filename)
 			self.buildcomm = ""
 
 		elif ext == "pro":
@@ -97,7 +108,8 @@ class FileObject(object):
 			self.runcomm = "python whitespace/interpret.py " + str(self.filename)
 			self.buildcomm = ""
 
-		elif ext == "lol":
+		elif ext == "LOL":
 			self.language = "LOLCODE"
-			self.runcomm = "python lol.py " + str(self.filename)
+			self.runcomm = "python lol.py -r " + str(self.filename)
 			self.buildcomm = ""
+	
