@@ -58,11 +58,11 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			'literal': format('magenta'),
 			'comment': format('darkGreen', 'italic'),
 			'wsspace': format('black', bgcolor='blue'),
-			'wstab': format('black', bgcolor='red'),
-			'wsnewline': format('black', bgcolor='green')
+			'wstab': format('black', bgcolor='red')
 		}
 		self.rules = []
 		rules = []
+
 
 # C++ ______________________________________________________________________________________________________________________
 
@@ -190,8 +190,7 @@ class SyntaxHighlighter (QtGui.QSyntaxHighlighter):
 			# OK, we're gonna do some crazy stuff with this one. Most of it needs to be defined by hand.
 			rules += [
 					(r' ', 0, self.styles['wsspace']),
-					(r'\t', 0, self.styles['wstab']),
-					(r'\n', 0, self.styles['wsnewline'])
+					(r'\t', 0, self.styles['wstab'])
 			]
 
 		self.rules = [(QtCore.QRegExp(pattern), index, formatz) for (pattern, index, formatz) in rules]
