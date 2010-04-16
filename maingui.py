@@ -178,7 +178,7 @@ class MainWindow (QtGui.QMainWindow):
 			raise Exception("This is an interpreted language...")
 		statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
 		if statz != 0:
-			QtGui.QMessageBox.about(self, "Build results", outz)
+			os.system("xterm -e '" + self.currentfile.buildcomm + "; python pause.py'")
 		else:
 			QtGui.QMessageBox.about(self, "Build results", "The build succeeded!")
 
