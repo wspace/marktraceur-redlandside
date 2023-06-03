@@ -15,10 +15,10 @@ more information.
 #!/usr/bin/python
 
 import sys
-import PyQt4.QtGui
+from PyQt5.QtWidgets import QApplication
 import maingui
 
-ride = PyQt4.QtGui.QApplication(sys.argv)
+ride = QApplication(sys.argv)
 ridemain = maingui.MainWindow()
 ridemain.show()
 sys.exit(ride.exec_())

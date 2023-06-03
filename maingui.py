@@ -14,18 +14,18 @@ more information.
 
 import os.path
 import os
-import commands
-import time
+import subprocess
 
-import PyQt4.QtGui
-import PyQt4.QtCore
+from PyQt5 import QtCore
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QAction, QMainWindow, QLabel, QMessageBox, QTextEdit
 
 import fileobject
 import synhigh
 
-class MainWindow (PyQt4.QtGui.QMainWindow):
+class MainWindow (QMainWindow):
     def __init__(self):
-        PyQt4.QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
 
         # Set the window size when opened, title the window, and set the icon
 
@@ -33,13 +33,13 @@ class MainWindow (PyQt4.QtGui.QMainWindow):
 
         self.resize(800,600)
         self.setWindowTitle('rIDE')
-        self.setWindowIcon(PyQt4.QtGui.QIcon('icons/ride.png'))
+        self.setWindowIcon(QIcon('icons/ride.png'))
 
         # Declare the text field widget, and make it the most important,
         # because the Lady of the Lake raised aloft the blade Excalibur from
         # the lake and gave it to the text widget.
 
-        self.textedit = PyQt4.QtGui.QTextEdit()
+        self.textedit = QTextEdit()
         self.setCentralWidget(self.textedit)
         self.textedit.setFontFamily("monospace")
         self.textedit.setLineWrapMode(0)
@@ -47,117 +47,105 @@ class MainWindow (PyQt4.QtGui.QMainWindow):
         welcomemsg += 'Please create a new file or open an existing one.'
         self.textedit.setText(welcomemsg)
         self.textedit.setEnabled(False)
-        self.connect(self.textedit,
-                     PyQt4.QtCore.SIGNAL('textChanged()'),
-                     self.whenchanged)
+        self.textedit.textChanged.connect(self.whenchanged)
 
         self.highlighter = synhigh.SyntaxHighlighter(self.currentfile)
 
         # Creates an exit button, sets its icon and adds functionality.
 
-        exit = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('icons/exit.png'),
+        exit = QAction(QIcon('icons/exit.png'),
                                    'Exit', self)
         exit.setShortcut('Ctrl+Q')
         exit.setStatusTip('Exit application')
-        self.connect(exit, PyQt4.QtCore.SIGNAL('triggered()'),
-                     PyQt4.QtCore.SLOT('close()'))
+        exit.triggered.connect(self.close)
 
         # Creates a similar shortcut for a new file
 
-        newfile = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('icons/newfile.png'),
+        newfile = QAction(QIcon('icons/newfile.png'),
                                       'New', self)
         newfile.setShortcut('Ctrl+N')
         newfile.setStatusTip('Create a new file')
-        self.connect(newfile, PyQt4.QtCore.SIGNAL('triggered()'),
-                     self.currentfile.newfile)
+        newfile.triggered.connect(self.currentfile.newfile)
 
         # Creates a similar shortcut for opening a file
 
-        openfile = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('icons/openfile.png'),
+        openfile = QAction(QIcon('icons/openfile.png'),
                                        'Open...', self)
         openfile.setShortcut('Ctrl+O')
         openfile.setStatusTip('Open a file')
-        self.connect(openfile, PyQt4.QtCore.SIGNAL('triggered()'),
-                     self.currentfile.openfile)
+        openfile.triggered.connect(self.currentfile.openfile)
 
         # Creates a similar shortcut for saving a file
 
-        self.savefile = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('icons/savefile.png'),
+        self.savefile = QAction(QIcon('icons/savefile.png'),
                                        'Save...', self)
         self.savefile.setShortcut('Ctrl+S')
         self.savefile.setStatusTip('Save this file')
         self.savefile.setEnabled(False)
-        self.connect(self.savefile, PyQt4.QtCore.SIGNAL('triggered()'),
-                     self.currentfile.savefile)
+        self.savefile.triggered.connect(self.currentfile.savefile)
 
         # Creates a similar shortcut for saving a file, forcing a dialog.
 
-        self.saveas = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('icons/savefile.png'),
+        self.saveas = QAction(QIcon('icons/savefile.png'),
                                      'Save as...', self)
         self.saveas.setStatusTip('Save this file with a different filename')
         self.saveas.setEnabled(False)
-        self.connect(self.saveas, PyQt4.QtCore.SIGNAL('triggered()'),
-                     self.currentfile.saveas)
+        self.saveas.triggered.connect(self.currentfile.saveas)
 
         # Creates a similar shortcut for building a file
 
-        buildicon = PyQt4.QtGui.QIcon('icons/buildonly.png')
-        self.buildonly = PyQt4.QtGui.QAction(buildicon, 'Build (Ctrl-T)', self)
+        buildicon = QIcon('icons/buildonly.png')
+        self.buildonly = QAction(buildicon, 'Build (Ctrl-T)', self)
         self.buildonly.setShortcut('Ctrl+T')
         self.buildonly.setStatusTip('Build the project')
         self.buildonly.setEnabled(False)
-        self.connect(self.buildonly, PyQt4.QtCore.SIGNAL('triggered()'),
-                     self.onlybuild)
+        self.buildonly.triggered.connect(self.onlybuild)
 
         # Creates the build-and-run shortcut
-        bricon = PyQt4.QtGui.QIcon('icons/buildandrun.png')
-        self.buildrun = PyQt4.QtGui.QAction(bricon, 'Build and Run (Ctrl-B)', self)
+        bricon = QIcon('icons/buildandrun.png')
+        self.buildrun = QAction(bricon, 'Build and Run (Ctrl-B)', self)
         self.buildrun.setShortcut('Ctrl+B')
         self.buildrun.setStatusTip('Build the project and run it')
         self.buildrun.setEnabled(False)
-        self.connect(self.buildrun, PyQt4.QtCore.SIGNAL('triggered()'),
-                     self.buildandrun)
+        self.buildrun.triggered.connect(self.buildandrun)
 
         # Creates the run shortcut
 
-        self.runonly = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('icons/runonly.png'),
+        self.runonly = QAction(QIcon('icons/runonly.png'),
                                       'Run (Ctrl-R)', self)
         self.runonly.setShortcut('Ctrl+R')
         self.runonly.setStatusTip('Run the latest build')
         self.runonly.setEnabled(False)
-        self.connect(self.runonly, PyQt4.QtCore.SIGNAL('triggered()'), self.onlyrun)
+        self.runonly.triggered.connect(self.onlyrun)
 
         # Creates the copy shortcut
 
-        self.copy = PyQt4.QtGui.QAction('Copy', self)
+        self.copy = QAction('Copy', self)
         self.copy.setShortcut('Ctrl+C')
         self.copy.setStatusTip('Copy the selected text')
         self.copy.setEnabled(False)
-        self.connect(self.copy, PyQt4.QtCore.SIGNAL('triggered()'), self.textedit,
-                     PyQt4.QtCore.SLOT('copy()'))
+        self.copy.triggered.connect(self.textedit.copy)
 
         # Create the cut shortcut
 
-        self.cut = PyQt4.QtGui.QAction('Cut', self)
+        self.cut = QAction('Cut', self)
         self.cut.setShortcut('Ctrl+X')
         self.cut.setStatusTip('Cut the selected text')
         self.cut.setEnabled(False)
-        self.connect(self.cut, PyQt4.QtCore.SIGNAL('triggered()'), self.textedit,
-                     PyQt4.QtCore.SLOT('cut()'))
+        self.cut.triggered.connect(self.textedit.cut)
 
         # Create the paste shortcut
 
-        self.paste = PyQt4.QtGui.QAction('Paste', self)
+        self.paste = QAction('Paste', self)
         self.paste.setShortcut('Ctrl+V')
         self.paste.setStatusTip('Paste text from the clipboard')
         self.paste.setEnabled(False)
-        self.connect(self.paste, PyQt4.QtCore.SIGNAL('triggered()'), self.textedit,
-                     PyQt4.QtCore.SLOT('paste()'))
+        self.paste.triggered.connect(self.textedit.paste)
 
         # Initialize Status bar
 
         statusbar = self.statusBar()
-        self.langlabel = PyQt4.QtGui.QLabel()
+        self.langlabel = QLabel()
         statusbar.addWidget(self.langlabel)
 
         # Creates the menu bar and the file menu,
@@ -205,22 +193,22 @@ class MainWindow (PyQt4.QtGui.QMainWindow):
             msg = "You should save the file before continuing!"
             ok = "OK"
             c = "Cancel"
-            needsave = PyQt4.QtGui.QMessageBox.question(self, t, msg, ok, c)
+            needsave = QMessageBox.question(self, t, msg, ok, c)
             if needsave == 0:
                 self.currentfile.savefile(True)
 
         br = "Build results"
         if self.currentfile.language not in ["C++"]:
             msg = "This language doesn't need to be built! Just hit 'Run'!"
-            PyQt4.QtGui.QMessageBox.about(self, br, msg)
+            QMessageBox.about(self, br, msg)
             raise Exception("This is an interpreted language...")
-        statz, outz = commands.getstatusoutput(self.currentfile.buildcomm)
+        statz, outz = subprocess.getstatusoutput(self.currentfile.buildcomm)
         if statz != 0:
             rbc = "xterm -e '" + self.currentfile.buildcomm
             rbc += "; python pause.py'"
             os.system(rbc)
         else:
-            PyQt4.QtGui.QMessageBox.about(self, br, "The build succeeded!")
+            QMessageBox.about(self, br, "The build succeeded!")
 
     def buildandrun(self):
         # Ask if they want to save the file, then do so--otherwise, throw an
@@ -250,9 +238,9 @@ class MainWindow (PyQt4.QtGui.QMainWindow):
             if not saved:
                 t = "WARNING: Save the file!"
                 m = "You should save the file before continuing!"
-                ok = "OK"
-                c = "Cancel"
-                needsave = PyQt4.QtGui.QMessageBox.question(self, t, m, ok, c)
+                ok = QMessageBox.Ok
+                c = QMessageBox.Cancel
+                needsave = QMessageBox.question(self, t, m, ok, c)
                 if needsave == 0:
                     self.currentfile.savefile(True)
         rbc = "xterm -e '" + self.currentfile.runcomm + "; python pause.py'"

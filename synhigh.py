@@ -10,18 +10,18 @@ COPYING file in this directory or http://www.gnu.org/licenses/gpl-3.0.html for
 more information.
 """
 
-import PyQt4.QtGui
-import PyQt4.QtCore
+from PyQt5.QtCore import QRegExp
+from PyQt5.QtGui import QColor, QFont, QSyntaxHighlighter, QTextCharFormat
 
 def format(color, style='', bgcolor=''):
     """Return a QTextCharFormat with the given attributes.
     """
-    _color = PyQt4.QtGui.QColor()
+    _color = QColor()
     _color.setNamedColor(color)
-    _format = PyQt4.QtGui.QTextCharFormat()
+    _format = QTextCharFormat()
     _format.setForeground(_color)
     if 'bold' in style:
-        _format.setFontWeight(PyQt4.QtGui.QFont.Bold)
+        _format.setFontWeight(QFont.Bold)
     if 'italic' in style:
         _format.setFontItalic(True)
     if bgcolor != '':
@@ -30,11 +30,11 @@ def format(color, style='', bgcolor=''):
 
     return _format
 
-class SyntaxHighlighter(PyQt4.QtGui.QSyntaxHighlighter):
+class SyntaxHighlighter(QSyntaxHighlighter):
 
     def __init__(self, fileobj):
         te = fileobj.parent.textedit
-        PyQt4.QtGui.QSyntaxHighlighter.__init__(self, te.document())
+        QSyntaxHighlighter.__init__(self, te.document())
 
         self.styles = {
             'keyword': format('red'),
@@ -209,7 +209,7 @@ class SyntaxHighlighter(PyQt4.QtGui.QSyntaxHighlighter):
                 (r'\t', 0, self.styles['wstab'])
             ]
 
-        self.rules = [(PyQt4.QtCore.QRegExp(p), i, f) for (p, i, f) in rules]
+        self.rules = [(QRegExp(p), i, f) for (p, i, f) in rules]
 
     def highlightBlock(self, text):
         # Do other syntax formatting
@@ -219,7 +219,7 @@ class SyntaxHighlighter(PyQt4.QtGui.QSyntaxHighlighter):
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
-                length = expression.cap(nth).length()
+                length = len(expression.cap(nth))
                 self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
         self.setCurrentBlockState(0)

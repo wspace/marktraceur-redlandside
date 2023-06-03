@@ -13,8 +13,7 @@ more information.
 import os.path
 import os
 
-import PyQt4.QtGui
-import PyQt4.QtCore
+from PyQt5.QtWidgets import QFileDialog, QInputDialog
 
 from synhigh import SyntaxHighlighter
 
@@ -32,11 +31,8 @@ class FileObject (object):
                     "Lisp", "Whitespace", "LOLCODE"]
         langdiat = 'Choose a Language'
         langdia = 'Which language are you using today?'
-        self.language, ok = PyQt4.QtGui.QInputDialog.getItem(self.parent,
-                                                             langdiat,
-                                                             langdia,
-                                                             languages,
-                                                             0, False)
+        self.language, ok = QInputDialog.getItem(self.parent, langdiat, langdia,
+                                                 languages, 0, False)
         if ok:
             langlabel = "Current Language: " + self.language
             self.parent.textedit.clear()
@@ -48,15 +44,14 @@ class FileObject (object):
 
     def openfile(self):
         userpath = os.path.expanduser('~')
-        self.filename = PyQt4.QtGui.QFileDialog.getOpenFileName(self.parent,
-                                                                'Open file...',
-                                                                userpath)
+        self.filename, _ = QFileDialog.getOpenFileName(self.parent,
+                                                       'Open file...',
+                                                       userpath)
         if self.filename == "":
             return
-        fileobject = open(self.filename, 'r')
-        self.parent.textedit.setText(fileobject.read())
-        self.findtype(self.filename.split(".")[-1])
-        fileobject.close()
+        with open(self.filename, 'r') as fileobject:
+            self.parent.textedit.setText(fileobject.read())
+            self.findtype(self.filename.split(".")[-1])
         self.parent.textedit.setEnabled(True)
         self.parent.enable_controls()
         self.parent.langlabel.setText("Current Language: " + self.language)
@@ -69,16 +64,15 @@ class FileObject (object):
         # Take all the text in the editor, put all the text into a file,
         # and change the filename to that.
         if self.filename == "" or forcedia:
-            savedia = PyQt4.QtGui.QFileDialog()
-            self.filename = savedia.getSaveFileName(self.parent,
-                                                    'Save file...',
-                                                    os.path.expanduser('~'))
+            savedia = QFileDialog()
+            self.filename, _ = savedia.getSaveFileName(self.parent,
+                                                       'Save file...',
+                                                       os.path.expanduser('~'))
             savedia.close()
         if self.filename == "":
             return
-        fileout = open(self.filename, 'w')
-        fileout.write(self.parent.textedit.toPlainText())
-        fileout.close()
+        with open(self.filename, 'w') as fileout:
+            fileout.write(self.parent.textedit.toPlainText())
         self.findtype(self.filename.split(".")[-1])
 
     def saveas(self):
